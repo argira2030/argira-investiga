@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARGIRA — Sonificación y Métricas Perceptuales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:     #0e0e12;
+    --paper:   #f4f1eb;
+    --dim:     #6b6860;
+    --rule:    #c8c4bb;
+    --accent:  #c0392b;
+    --accent2: #1a3a5c;
+    --mono:    'DM Mono', monospace;
+    --serif:   'Libre Baskerville', Georgia, serif;
+    --display: 'Instrument Serif', Georgia, serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    border-bottom: 1px solid var(--ink);
+    padding: 0 clamp(24px, 5vw, 80px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 100;
+  }
+
+  .masthead-logo {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .masthead-nav {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .masthead-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .masthead-nav a:hover { color: var(--ink); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px) clamp(40px, 6vw, 80px);
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+  }
+
+  .hero-left { }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(44px, 6vw, 76px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .hero-subtitle {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    margin-top: 16px;
+    text-transform: uppercase;
+    line-height: 2;
+  }
+
+  .hero-right {
+    padding-bottom: 8px;
+  }
+
+  .hero-abstract {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink);
+    border-left: 2px solid var(--accent2);
+    padding-left: 20px;
+  }
+
+  .hero-abstract strong {
+    color: var(--accent);
+  }
+
+  /* ── DIVIDER ── */
+  .rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0 clamp(24px, 5vw, 80px);
+  }
+
+  /* ── SECTION ── */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 80px);
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(28px, 3.5vw, 44px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  .section-title em { font-style: italic; color: var(--accent2); }
+
+  .section-body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #2a2820;
+    max-width: 660px;
+  }
+
+  /* ── PREGUNTA CENTRAL ── */
+  .question-block {
+    background: var(--accent2);
+    color: #f4f1eb;
+    padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 80px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-block::before {
+    content: '?';
+    position: absolute;
+    right: -20px;
+    top: -60px;
+    font-family: var(--display);
+    font-size: 400px;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .question-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .question-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244,241,235,0.5);
+    margin-bottom: 24px;
+  }
+
+  .question-text {
+    font-family: var(--display);
+    font-size: clamp(22px, 3vw, 38px);
+    line-height: 1.3;
+    font-style: italic;
+    max-width: 780px;
+  }
+
+  .question-text strong {
+    font-style: normal;
+    color: #f0c040;
+  }
+
+  /* ── EXPERIMENTOS TIMELINE ── */
+  .experiments {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 48px;
+  }
+
+  .exp-card {
+    background: var(--paper);
+    padding: 28px 24px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .exp-card:hover { background: #edeae3; }
+
+  .exp-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    margin-bottom: 10px;
+  }
+
+  .exp-name {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .exp-desc {
+    font-size: 13px;
+    color: var(--dim);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .exp-result {
+    font-family: var(--mono);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .badge-neg  { background: var(--accent); }
+  .badge-weak { background: #d4a017; }
+
+  /* ── HALLAZGO CENTRAL ── */
+  .finding {
+    padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 80px);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .finding-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .finding-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(244,241,235,0.4);
+    margin-bottom: 24px;
+  }
+
+  .finding-title {
+    font-family: var(--display);
+    font-size: clamp(24px, 3vw, 38px);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .finding-body {
+    font-size: 15px;
+    line-height: 1.85;
+    color: rgba(244,241,235,0.75);
+  }
+
+  /* ── TABLA RESULTADOS ── */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .results-table th {
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    color: rgba(244,241,235,0.45);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .results-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    color: rgba(244,241,235,0.85);
+    vertical-align: middle;
+  }
+
+  .results-table tr:last-child td { border-bottom: none; }
+
+  .r2-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .r2-val {
+    min-width: 60px;
+  }
+
+  .r2-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .r2-bar-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+  .r2-bar-fill.neg { background: var(--accent); right: 0; }
+  .r2-bar-fill.pos { background: #d4a017; left: 0; }
+
+  /* ── PUBLICACIONES ── */
+  .pubs {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 48px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .pub-item {
+    background: var(--paper);
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+  }
+  .pub-item:hover { background: #edeae3; }
+
+  .pub-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    min-width: 32px;
+  }
+
+  .pub-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .pub-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+  }
+
+  .pub-doi {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent2);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pub-doi::after {
+    content: '↗';
+    font-size: 13px;
+  }
+
+  /* ── AUTOR ── */
+  .author-section {
+    padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 80px);
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .author-name {
+    font-family: var(--display);
+    font-size: clamp(22px, 2.5vw, 32px);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .author-role {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 2;
+  }
+
+  .author-bio {
+    font-size: 15px;
+    line-height: 1.85;
+    color: #2a2820;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--ink);
+    padding: 28px clamp(24px, 5vw, 80px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-left {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-right {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  .footer-right a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+
+  /* ── SKIP LINK ── */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    background: var(--accent2);
+    color: #f4f1eb;
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    text-decoration: none;
+    z-index: 10000;
+    transition: top 0.2s;
+  }
+  .skip-link:focus { top: 0; }
+
+  /* ── BADGE ACCESIBLE ── */
+  /* Clase genérica visually-hidden para elementos de solo texto accesible */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+  /* badge-label: visible para screen readers pero oculto visualmente (para th/caption) */
+  .badge-label {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+  /* El caption de la tabla debe ser anunciado por screen readers */
+  .results-table caption {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+
+  /* ── ANIMACIONES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-tag      { animation: fadeUp 0.6s ease both; }
+  .hero-title    { animation: fadeUp 0.7s 0.1s ease both; }
+  .hero-subtitle { animation: fadeUp 0.7s 0.2s ease both; }
+  .hero-abstract { animation: fadeUp 0.7s 0.25s ease both; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero, .finding-inner, .author-section {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .masthead-nav { display: none; }
+    .pub-item { grid-template-columns: auto 1fr; }
+    .pub-doi { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
+
+<!-- MASTHEAD -->
+<header class="masthead" role="banner">
+  <a class="masthead-logo" href="#" aria-label="ARGIRA — inicio">ARGIRA</a>
+  <nav aria-label="Navegación principal" id="main-nav">
+    <ul class="masthead-nav">
+      <li><a href="#proyecto">Proyecto</a></li>
+      <li><a href="#correlacion">Correlación</a></li>
+      <li><a href="#experimentos">Experimentos</a></li>
+      <li><a href="#hallazgo">Hallazgo</a></li>
+      <li><a href="#argira-iv">ARGIRA IV</a></li>
+      <li><a href="#publicaciones">Publicaciones</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- HERO -->
+<main id="contenido-principal">
+<section class="hero" aria-labelledby="hero-titulo">
+  <div class="hero-left">
+    <div class="hero-tag">Investigación en curso · 2026</div>
+    <h1 class="hero-title" id="hero-titulo">
+      ARGIRA<br>
+      <em>Sonificación</em><br>
+      y Métricas<br>
+      Perceptuales
+    </h1>
+    <p class="hero-subtitle">
+      Ranero García, Jose<br>
+      Zenodo · CC BY-NC 4.0
+    </p>
+  </div>
+  <div class="hero-right">
+    <p class="hero-abstract">
+      ¿Puede la estructura visual de una imagen predecir cómo suena perceptualmente?
+      ARGIRA es un proyecto de investigación que responde esta pregunta a través de
+      <strong>resultados negativos sistemáticos</strong> — mapeando los límites de lo que
+      las representaciones visuales estándar pueden y no pueden explicar sobre la
+      percepción sonora.
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PREGUNTA CENTRAL -->
+<div class="question-block" role="region" aria-label="Pregunta central del proyecto">
+  <div class="question-inner">
+    <div class="question-label">La pregunta central</div>
+    <p class="question-text">
+      ¿Es Δ —la diferencia perceptual entre dos mappings de sonificación—
+      <strong>predecible</strong> a partir de características visuales
+      de la imagen fuente?
+    </p>
+  </div>
+</div>
+
+<!-- PROYECTO -->
+<section class="section" id="proyecto">
+  <div class="section-label">El proyecto</div>
+  <h2 class="section-title">Un mapa de lo que<br><em>no explica</em> Δ</h2>
+  <p class="section-body">
+    ARGIRA no es un modelo predictivo. Es un <strong>marco de eliminación representacional estructurada</strong>:
+    una secuencia de experimentos diseñada para determinar qué clases de representación visual
+    son insuficientes para capturar la diferencia perceptual entre mappings de sonificación.
+  </p>
+  <br>
+  <p class="section-body">
+    El proyecto evalúa tres niveles jerárquicos de representación —estadísticas de bajo nivel,
+    espacios de características expandidos y embeddings semánticos proxy— usando regresión
+    lineal robusta y Random Forest con validación cruzada de 5 folds. El corpus incluye
+    ~86 imágenes de dos colecciones visuales heterogéneas: pinturas postimpresionistas
+    y fotografías de paisaje de museo.
+  </p>
+</section>
+
+<hr class="rule">
+
+<!-- CORRELACIÓN FUNDACIONAL -->
+<section class="section" id="correlacion">
+  <div class="section-label">El origen · Experimento fundacional</div>
+  <h2 class="section-title">La correlación que<br><em>lo empezó todo</em></h2>
+  <p class="section-body">
+    Al analizar 45 obras con la regla de conversión de Argira, emergió una correlación
+    estadísticamente robusta entre la variabilidad cromática de una pintura y la complejidad
+    sonora de su sonificación.
+  </p>
+  <br>
+  <p class="section-body">
+    Esta correlación —<strong>r = 0.8869, R² = 0.8417, p &lt; 0.001</strong>— no estaba diseñada.
+    Surgió de los datos. Es la razón por la que el proyecto existe: el color parece estar relacionado con el sonido.
+  </p>
+
+  <div style="margin-top:48px; border:1px solid var(--rule); padding:32px;">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;">Pearson r = 0.8869 · R² = 0.8417 · p &lt; 0.001 · N = 45 · Argira v3.5</div>
+    <div style="font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:24px;">hue_std (variabilidad de tono) → Ds (dimensión espectral / complejidad sonora)</div>
+
+    <svg viewBox="0 0 500 320" role="img" style="width:100%;max-width:600px;display:block;margin:0 auto;"
+      aria-label="Gráfico de dispersión: correlación r=0.8869 entre variabilidad cromática (hue_std) y complejidad sonora (Ds). 45 obras van de Malevich en la esquina inferior izquierda a Kandinsky en la superior derecha, con línea de regresión lineal en rojo.">
+      <rect width="500" height="320" fill="#f4f1eb"/>
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="60" y1="20" x2="480" y2="20"/><line x1="60" y1="73" x2="480" y2="73"/>
+        <line x1="60" y1="126" x2="480" y2="126"/><line x1="60" y1="179" x2="480" y2="179"/>
+        <line x1="60" y1="232" x2="480" y2="232"/><line x1="60" y1="285" x2="480" y2="285"/>
+        <line x1="60" y1="20" x2="60" y2="285"/><line x1="144" y1="20" x2="144" y2="285"/>
+        <line x1="228" y1="20" x2="228" y2="285"/><line x1="312" y1="20" x2="312" y2="285"/>
+        <line x1="396" y1="20" x2="396" y2="285"/><line x1="480" y1="20" x2="480" y2="285"/>
+      </g>
+      <line x1="60" y1="285" x2="480" y2="285" stroke="#0e0e12" stroke-width="1.5"/>
+      <line x1="60" y1="20" x2="60" y2="285" stroke="#0e0e12" stroke-width="1.5"/>
+      <!-- Línea de regresión -->
+      <line x1="65" y1="278" x2="478" y2="27" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <!-- Puntos de datos -->
+      <circle cx="69" cy="284" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="85" cy="261" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="102" cy="238" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="127" cy="197" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="148" cy="172" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="169" cy="145" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="186" cy="124" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="220" cy="84" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="245" cy="75" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="270" cy="60" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="295" cy="52" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="321" cy="42" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="354" cy="34" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="383" cy="30" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="413" cy="27" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <circle cx="455" cy="22" r="5" fill="#1a3a5c" opacity="0.8"/>
+      <!-- Etiquetas -->
+      <text x="69" y="300" font-family="'DM Mono', monospace" font-size="9" fill="#6b6860">Malevich</text>
+      <text x="420" y="14" font-family="'DM Mono', monospace" font-size="9" fill="#6b6860">Kandinsky</text>
+      <text x="330" y="48" font-family="'DM Mono', monospace" font-size="10" fill="#c0392b" font-weight="500">r = 0.8869</text>
+      <text x="220" y="308" font-family="'DM Mono', monospace" font-size="10" fill="#6b6860" text-anchor="middle">hue_std →</text>
+      <text x="16" y="153" font-family="'DM Mono', monospace" font-size="10" fill="#6b6860" transform="rotate(-90,16,153)">Ds →</text>
+    </svg>
+
+    <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--dim);margin-top:16px;text-align:center;">
+      16 obras mostradas · Correlación calculada sobre N = 45 obras (dataset completo) ·
+      <a href="https://doi.org/10.5281/zenodo.18865019" target="_blank" style="color:var(--accent2);">Zenodo v10 ↗</a>
+    </p>
+  </div>
+
+  <br>
+  <p class="section-body" style="color:var(--dim);font-size:14px;">
+    Esta correlación es el punto de partida, no la conclusión. La pregunta que abre es:
+    ¿qué características visuales explican ese vínculo? Los experimentos 11–15 intentan
+    responderla — y encuentran que las representaciones visuales estándar no son suficientes.
+  </p>
+  <br>
+  <p class="section-body" style="color:var(--dim);font-size:14px;">
+    El museo sonoro <a href="https://argira.eus/argira-sonification/" style="color:var(--accent2);">argira.eus/argira-sonification/</a>
+    permite escuchar esta correlación en acción: las 16 obras ordenadas de menor a mayor cromatismo,
+    de Malevich a Kandinsky.
+  </p>
+</section>
+
+<hr class="rule">
+
+<!-- EXPERIMENTOS -->
+<section class="section" id="experimentos" aria-labelledby="exp-titulo">
+  <div class="section-label">Experimentos 11 – 15</div>
+  <h2 class="section-title" id="exp-titulo">Tres niveles.<br><em>El mismo resultado.</em></h2>
+
+  <div class="experiments">
+
+    <div class="exp-card">
+      <div class="exp-num">EXP 11 – 13</div>
+      <div class="exp-name">Features de bajo nivel</div>
+      <div class="exp-desc">Tono, saturación, densidad de bordes, rugosidad, contraste de luminancia (~8 features).</div>
+      <div class="exp-result">
+        <span class="badge badge-neg" aria-hidden="true"></span>
+        <span style="font-size:12px">R² CV &lt; 0 · Sin señal</span>
+      </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-num">EXP 14</div>
+      <div class="exp-name">Features expandidas + PCA</div>
+      <div class="exp-desc">Histogramas HSV, filtros Laws, estadísticas por cuadrante, Sobel (~209 features).</div>
+      <div class="exp-result">
+        <span class="badge badge-weak" aria-hidden="true"></span>
+        <span style="font-size:12px">R² CV ≈ 0.10 · Marginal e inestable</span>
+      </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-num">EXP 15</div>
+      <div class="exp-name">Embedding semántico proxy</div>
+      <div class="exp-desc">Matriz de similitud visual 47×47. El nivel de representación más alto evaluado.</div>
+      <div class="exp-result">
+        <span class="badge badge-neg" aria-hidden="true"></span>
+        <span style="font-size:12px">R² CV = −0.337 · Régimen de ruido</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HALLAZGO -->
+<div class="finding" id="hallazgo" role="region" aria-labelledby="hallazgo-titulo">
+  <div class="finding-inner">
+    <div>
+      <div class="finding-label">Conclusión principal</div>
+      <h2 class="finding-title" id="hallazgo-titulo">Δ no parece estar codificado de forma robusta en las representaciones evaluadas.</h2>
+      <p class="finding-body">
+        Aumentar la complejidad representacional —de visual a estadístico a semántico—
+        no mejora de forma consistente la predicción de Δ. Este no es un fallo del modelo:
+        es una condición de frontera representacional. Quedan abiertas representaciones
+        de orden superior —embeddings multimodales profundos, CLIP— que aún no han sido evaluadas.
+      </p>
+    </div>
+    <div>
+      <table class="results-table" aria-label="Resultados R² por nivel de representación">
+        <caption>Mejor R² con validación cruzada por nivel de representación visual</caption>        <thead>
+          <tr>
+            <th scope="col">Nivel</th>
+            <th scope="col">Mejor R² CV</th>
+            <th scope="col">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bajo nivel<br><span style="opacity:0.5;font-size:11px">Exp 11–13</span></td>
+            <td>
+              <div class="r2-bar-wrap">
+                <span class="r2-val">−0.44</span>
+                <div class="r2-bar-bg" aria-hidden="true">
+                  <div class="r2-bar-fill neg" style="width:44%"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-neg" aria-hidden="true"></span><span>Sin señal</span></td>
+          </tr>
+          <tr>
+            <td>Medio nivel<br><span style="opacity:0.5;font-size:11px">Exp 14</span></td>
+            <td>
+              <div class="r2-bar-wrap">
+                <span class="r2-val">+0.10</span>
+                <div class="r2-bar-bg" aria-hidden="true">
+                  <div class="r2-bar-fill pos" style="width:10%"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-weak" aria-hidden="true"></span><span>Marginal</span></td>
+          </tr>
+          <tr>
+            <td>Semántico<br><span style="opacity:0.5;font-size:11px">Exp 15</span></td>
+            <td>
+              <div class="r2-bar-wrap">
+                <span class="r2-val">−0.337</span>
+                <div class="r2-bar-bg" aria-hidden="true">
+                  <div class="r2-bar-fill neg" style="width:34%"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-neg" aria-hidden="true"></span><span>Sin señal</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- MÉTRICAS -->
+<section style="background: var(--ink); color: var(--paper);">
+  <div style="max-width:1100px; margin:0 auto; padding: clamp(40px,6vw,72px) clamp(24px,5vw,80px);">
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:32px;">Resumen del estudio</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);">
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--paper);margin-bottom:6px;">~86</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Corpus inicial</div>
+      </div>
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--paper);margin-bottom:6px;">47–72</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Muestra válida final</div>
+      </div>
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--paper);margin-bottom:6px;">11–15</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Experimentos</div>
+      </div>
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--paper);margin-bottom:6px;">3</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Modelos evaluados</div>
+        <div style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.3);margin-top:4px;">Ridge · Huber · RF</div>
+      </div>
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--paper);margin-bottom:6px;">5-fold</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Validación cruzada</div>
+      </div>
+      <div style="background:var(--ink);padding:24px 20px;">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:500;color:#d4a017;margin-bottom:6px;">0.10</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(244,241,235,0.45);">Mejor R² CV</div>
+        <div style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.3);margin-top:4px;">No generaliza</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ARGIRA IV -->
+<section class="section" id="argira-iv" aria-labelledby="argira-iv-titulo">
+  <div class="section-label">ARGIRA IV · Cambio de perspectiva</div>
+  <h2 class="section-title" id="argira-iv-titulo">De la divergencia perceptual<br><em>a la asimetría estructural</em></h2>
+  <p class="section-body">
+    ARGIRA IV reexamina los resultados negativos de las fases anteriores desde una perspectiva diferente.
+    En lugar de modelar directamente Δ como variable objetivo, analiza por separado los dos mappings
+    que la componen: <strong>OPRS</strong> y <strong>RTR</strong>. Este cambio metodológico revela
+    una asimetría estructural previamente oculta.
+  </p>
+</section>
+
+<!-- BLOQUE COMPARATIVO OPRS vs RTR -->
+<div style="background: var(--ink); color: var(--paper); padding: clamp(48px,7vw,96px) clamp(24px,5vw,80px);">
+  <div style="max-width:1100px; margin:0 auto;">
+
+    <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:40px;">
+      Modelado independiente de mappings · ARGIRA IV
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.1);margin-bottom:48px;">
+
+      <!-- OPRS -->
+      <div style="background:var(--ink);padding:40px 36px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-10px;font-family:var(--display);font-size:180px;color:rgba(255,255,255,0.03);line-height:1;pointer-events:none;">O</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:16px;">Mapping A</div>
+        <div style="font-family:var(--display);font-size:clamp(28px,3vw,42px);margin-bottom:24px;letter-spacing:-0.01em;">OPRS</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:28px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:6px;">Ridge Regression</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-family:var(--mono);font-size:22px;font-weight:500;color:#f4f1eb;min-width:70px;">0.582</span>
+              <div style="flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+                <div style="width:58.2%;height:100%;background:#d4a017;border-radius:3px;"></div>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.4);">R² CV</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:6px;">Random Forest</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-family:var(--mono);font-size:22px;font-weight:500;color:#f4f1eb;min-width:70px;">0.528</span>
+              <div style="flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+                <div style="width:52.8%;height:100%;background:#d4a017;border-radius:3px;"></div>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.4);">R² CV</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:12px;color:#d4a017;margin-bottom:12px;letter-spacing:0.05em;">p ≈ 0.002 · test de permutación</div>
+        <p style="font-size:14px;line-height:1.75;color:rgba(244,241,235,0.65);">
+          Conserva una parte sustancial de la estructura visual de la imagen,
+          especialmente la relacionada con la <strong style="color:rgba(244,241,235,0.9);">textura espacial y la rugosidad</strong>.
+        </p>
+      </div>
+
+      <!-- RTR -->
+      <div style="background:#0a0a0d;padding:40px 36px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-10px;font-family:var(--display);font-size:180px;color:rgba(255,255,255,0.03);line-height:1;pointer-events:none;">R</div>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:16px;">Mapping B</div>
+        <div style="font-family:var(--display);font-size:clamp(28px,3vw,42px);margin-bottom:24px;letter-spacing:-0.01em;">RTR</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:28px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:6px;">Ridge Regression</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-family:var(--mono);font-size:22px;font-weight:500;color:#f4f1eb;min-width:70px;">0.247</span>
+              <div style="flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+                <div style="width:24.7%;height:100%;background:var(--accent);border-radius:3px;"></div>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.4);">R² CV</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:6px;">Random Forest</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-family:var(--mono);font-size:22px;font-weight:500;color:#f4f1eb;min-width:70px;">0.086</span>
+              <div style="flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+                <div style="width:8.6%;height:100%;background:var(--accent);border-radius:3px;"></div>
+              </div>
+              <span style="font-family:var(--mono);font-size:10px;color:rgba(244,241,235,0.4);">R² CV</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:12px;letter-spacing:0.05em;">Relación débil · Sin señal de permutación significativa</div>
+        <p style="font-size:14px;line-height:1.75;color:rgba(244,241,235,0.65);">
+          Relación mucho más débil con la estructura espacial. Parece responder
+          principalmente a <strong style="color:rgba(244,241,235,0.9);">características cromáticas globales</strong>.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Hallazgo principal IV -->
+    <div style="border:1px solid rgba(255,255,255,0.12);padding:36px 40px;max-width:780px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:20px;">Hallazgo principal · ARGIRA IV</div>
+      <p style="font-family:var(--display);font-style:italic;font-size:clamp(18px,2.2vw,26px);line-height:1.35;color:var(--paper);margin-bottom:20px;">
+        Los resultados negativos de ARGIRA I–III no indican ausencia de relaciones imagen-sonido.
+      </p>
+      <p style="font-size:15px;line-height:1.85;color:rgba(244,241,235,0.7);">
+        La dificultad surge al modelar directamente una variable compuesta (Δ) que combina dos
+        transformaciones con sensibilidades distintas y parcialmente opuestas. Cuando ambos
+        mappings se estudian por separado, emergen estructuras predictivas claramente diferenciadas.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- IMPLICACIONES IV -->
+<section class="section" aria-labelledby="implicaciones-titulo">
+  <div class="section-label">Implicaciones</div>
+  <h2 class="section-title" id="implicaciones-titulo">Los algoritmos de sonificación<br><em>no son traductores neutros</em></h2>
+  <p class="section-body">
+    Cada mapping selecciona, preserva y descarta diferentes propiedades de la imagen.
+    La elección del mapping determina qué aspectos de la obra sobreviven en la representación acústica.
+  </p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:48px;">
+    <div style="background:var(--paper);padding:28px 24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">01</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3;">Diseño de sistemas de sonificación</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.6;">La elección del mapping no es neutral: determina qué estructura visual se transmite acústicamente.</div>
+    </div>
+    <div style="background:var(--paper);padding:28px 24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">02</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3;">Accesibilidad visual</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.6;">Implicaciones directas para el diseño de herramientas para personas con discapacidad visual.</div>
+    </div>
+    <div style="background:var(--paper);padding:28px 24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">03</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3;">Interfaces multimodales</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.6;">Fundamento empírico para el diseño de sistemas imagen-sonido con fidelidad perceptual.</div>
+    </div>
+    <div style="background:var(--paper);padding:28px 24px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">04</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px;line-height:1.3;">Museos y exploración auditiva</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.6;">Herramientas para la exploración auditiva de obras visuales en contextos museísticos.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px;border-left:2px solid var(--accent2);padding-left:20px;max-width:660px;">
+    <p style="font-size:15px;line-height:1.85;color:#2a2820;">
+      ARGIRA evoluciona así desde una serie de resultados negativos hacia la identificación de una
+      <strong>asimetría estructural en la traducción sensorial imagen→sonido</strong>.
+      Los resultados negativos eran, en realidad, el mapa de un territorio más complejo.
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- PUBLICACIONES -->
+<section class="section" id="publicaciones">
+  <div class="section-label">Depósitos públicos · Zenodo</div>
+  <h2 class="section-title">Acceso abierto<br><em>a todos los materiales</em></h2>
+
+  <div class="pubs">
+
+    <a class="pub-item" href="https://doi.org/10.5281/zenodo.20526610" target="_blank" aria-label="Publicación II: From Correlation to Failure — abre en nueva pestaña">
+      <span class="pub-num">II</span>
+      <div>
+        <div class="pub-title">From Correlation to Failure: Limits of Visual Feature Spaces in Predicting Perceptual Sonification Differences</div>
+        <div class="pub-meta">Experimentos 11–15 · Preprint · Zenodo · 2026</div>
+      </div>
+      <span class="pub-doi">10.5281/zenodo.20526610</span>
+    </a>
+
+    <a class="pub-item" href="https://doi.org/10.5281/zenodo.20524644" target="_blank" aria-label="Publicación I: Visual Predictors of Acoustic Perceptual Distance — abre en nueva pestaña">
+      <span class="pub-num">I</span>
+      <div>
+        <div class="pub-title">Visual Predictors of Acoustic Perceptual Distance in Image Sonification</div>
+        <div class="pub-meta">Experimento 11 · Software · Zenodo · 2026</div>
+      </div>
+      <span class="pub-doi">10.5281/zenodo.20524644</span>
+    </a>
+
+    <!-- ARGIRA III placeholder -->
+    <div class="pub-item" style="opacity:0.5;" aria-disabled="true" role="article" aria-label="ARGIRA III — en preparación, no disponible aún">
+      <span class="pub-num">III</span>
+      <div>
+        <div class="pub-title">ARGIRA III — Deep Multimodal Embeddings (en preparación)</div>
+        <div class="pub-meta">CLIP · Embeddings visuales profundos · Próximamente</div>
+      </div>
+      <span class="pub-doi" style="color:var(--dim);">en curso</span>
+    </div>
+
+    <!-- ARGIRA IV -->
+    <div class="pub-item" style="opacity:0.5;" aria-disabled="true" role="article" aria-label="ARGIRA IV — en preparación, no disponible aún">
+      <span class="pub-num">IV</span>
+      <div>
+        <div class="pub-title">ARGIRA IV — De la Divergencia Perceptual a la Asimetría Estructural (en preparación)</div>
+        <div class="pub-meta">Modelado independiente de mappings · OPRS vs RTR · Próximamente</div>
+      </div>
+      <span class="pub-doi" style="color:var(--dim);">en curso</span>
+    </div>
+
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- AUTOR -->
+<section class="author-section" aria-label="Sobre el autor">
+  <div>
+    <h3 class="author-name">Jose Ranero García</h3>
+    <div class="author-role">
+      Investigador principal<br>
+      Proyecto ARGIRA<br>
+      2026
+    </div>
+  </div>
+  <div>
+    <p class="author-bio">
+      ARGIRA es un proyecto de investigación independiente sobre sonificación y percepción
+      audiovisual, desarrollado con herramientas de computación móvil y publicado en abierto
+      bajo licencia CC BY-NC 4.0. El proyecto documenta tanto los hallazgos positivos como
+      los negativos, bajo la convicción de que mapear los límites del conocimiento es tan
+      valioso como extenderlos.
+    </p>
+    <br>
+    <p class="author-bio" style="color: var(--dim); font-size:14px;">
+      Los materiales completos —scripts, datasets, figuras y preprints— están disponibles
+      en Zenodo. Los resultados negativos son resultados.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="footer-left">
+    ARGIRA · Sonificación y Métricas Perceptuales · 2026 · CC BY-NC 4.0
+  </div>
+  <div class="footer-right">
+    <a href="https://doi.org/10.5281/zenodo.20526609">DOI serie completa ↗</a>
+  </div>
+</footer>
+
+</body>
+<script>
+  // Accesibilidad: sincronizar aria-hidden del nav con su visibilidad CSS en móvil
+  (function() {
+    var nav = document.getElementById('main-nav');
+    if (!nav) return;
+    function updateNavAria() {
+      var hidden = window.getComputedStyle(nav).display === 'none';
+      nav.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    }
+    updateNavAria();
+    window.addEventListener('resize', updateNavAria);
+  })();
+</script>
+</body>
+</html>
